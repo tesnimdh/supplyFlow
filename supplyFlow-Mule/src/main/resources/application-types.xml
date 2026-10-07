@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="commandePayload" format="json">
+      <types:shape format="weave" example="examples/commandeOutput.json"><![CDATA[%dw 2.0
+
+type commandePayload = {| commandeId: String |} {"example": "{\\\"commandeId\\\":\\\"CMD111\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="workflow" format="json">
+      <types:shape format="weave" example="examples/chaineInput-1.json"><![CDATA[%dw 2.0
+
+type workflow = {|
+  commandeId: String, 
+  statut: String, 
+  idFournisseur: String, 
+  nomFournisseur: String, 
+  contactFournisseur: String, 
+  nouvelEtat1: String, 
+  nouvelEtat2: String, 
+  produits: Array<{|    idProduit: Number {"typeId": "int"},     designationProduit: String,     quantiteProduit: Number {"typeId": "int"}  |}>
+|} {"example": "{\\\"commandeId\\\":\\\"CMD111\\\",\\\"statut\\\":\\\"en_attente\\\",\\\"idFournisseur\\\":\\\"FOR111\\\",\\\"nomFournisseur\\\":\\\"for1\\\",\\\"contactFournisseur\\\":\\\"tesnimdhouib03@gmail.com\\\",\\\"nouvelEtat1\\\":\\\"livr\u00E9\\\",\\\"nouvelEtat2\\\":\\\"valide\\\",\\\"produits\\\":[{\\\"idProduit\\\":3,\\\"designationProduit\\\":\\\"Produit C\\\",\\\"quantiteProduit\\\":30}]}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="changeState2Output" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#4083aff5-3b34-46ff-ba16-f8b895c16dc2">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="workflow"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#a17d8100-d983-49ab-b143-7a23a850e594">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:variables>
+          <types:variable name="entrepotPayload" type="workflow"/>
+        </types:variables>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#c34b135e-5811-41cc-9bce-e977857e5f72">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:variables>
+          <types:variable name="entrepotPayload" type="workflow"/>
+        </types:variables>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#21c8c4ca-e14f-4a39-b3fe-de488a2500a5">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="workflow"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

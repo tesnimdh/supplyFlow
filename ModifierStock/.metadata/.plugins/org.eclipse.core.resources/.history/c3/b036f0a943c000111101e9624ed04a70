@@ -1,0 +1,5 @@
+package com.entrepot.modifierstock.controller;
+
+public class StockController {
+
+}

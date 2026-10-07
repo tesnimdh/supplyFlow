@@ -1,0 +1,28 @@
+<!-- Use this file to deploy some handlers/chains and services      -->
+<!-- Two ways to do this:                                           -->
+<!--   java org.apache.axis.client.AdminClient deploy.wsdd          -->
+<!--      after the axis server is running                          -->
+<!-- or                                                             -->
+<!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   -->
+<!--      from the same directory that the Axis engine runs         -->
+
+<wsdd:deployment xmlns:XMLSchema="http://www.w3.org/2001/XMLSchema"
+    xmlns:java="http://xml.apache.org/axis/wsdd/providers/java" xmlns:service="http://service"
+    xmlns:wsdd="http://xml.apache.org/axis/wsdd/">
+  <wsdd:service name="IsExistImpl" provider="java:RPC" use="literal" style="wrapped">
+    <wsdd:parameter name="wsdlTargetNamespace" value="http://service"/>
+    <wsdd:parameter name="wsdlServiceElement" value="IsExistImplService"/>
+    <wsdd:parameter name="schemaQualified" value="http://service"/>
+    <wsdd:parameter name="wsdlServicePort" value="IsExistImpl"/>
+    <wsdd:parameter name="className" value="service.IsExistImplSoapBindingImpl"/>
+    <wsdd:parameter name="wsdlPortType" value="IsExistImpl"/>
+    <wsdd:parameter name="typeMappingVersion" value="1.2"/>
+    <wsdd:parameter name="allowedMethods" value="getCommande"/>
+    <wsdd:typeMapping qname="service:Commande" type="java:service.Commande" encodingStyle=""
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"/>
+    <wsdd:operation name="getCommande" qname="service:getCommande" returnQName="service:getCommandeReturn"
+        returnType="service:Commande" soapAction="">
+      <wsdd:parameter qname="service:idCommande" type="XMLSchema:string"/>
+    </wsdd:operation>
+  </wsdd:service>
+</wsdd:deployment>

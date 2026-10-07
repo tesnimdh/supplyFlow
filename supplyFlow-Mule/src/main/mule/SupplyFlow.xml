@@ -1,0 +1,376 @@
+<mule xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+      xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+      xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+        http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+        http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
+
+   
+
+    <http:listener-config
+        name="HTTP_Listener_config"
+        doc:name="HTTP Listener config"
+        doc:id="cb65046a-b162-4670-951a-cda4cd211d31">
+
+        <http:listener-connection
+            host="localhost"
+            port="9090"/>
+
+    </http:listener-config>
+
+
+   
+
+    <wsc:config
+        name="Web_Service_Consumer_Config"
+        doc:name="Web Service Consumer Config"
+        doc:id="81bdec3a-dde4-4012-b47f-cbbf65324aac">
+
+        <wsc:connection
+            wsdlLocation="http://localhost:9091/ExistanceCommande/services/IsExistImpl?wsdl"
+            service="IsExistImplService"
+            port="IsExistImpl"
+            address="http://localhost:9091/ExistanceCommande/services/IsExistImpl"/>
+
+    </wsc:config>
+
+
+   
+
+    <wsc:config
+        name="Web_Service_Consumer_Config1"
+        doc:name="Web Service Consumer Config"
+        doc:id="63ab8909-c1c3-4da6-86e8-94320d99ff9a">
+
+        <wsc:connection
+            wsdlLocation="http://localhost:9091/ChangeStatut/services/ChangeCommandeImpl?wsdl"
+            service="ChangeCommandeImplService"
+            port="ChangeCommandeImpl"
+            address="http://localhost:9091/ChangeStatut/services/ChangeCommandeImpl">
+
+            <wsc:web-service-security
+                actor="http://schemas.xmlsoap.org/soap/actor/next"/>
+
+        </wsc:connection>
+
+    </wsc:config>
+
+
+   
+
+    <jms:config
+        name="JMS_Config"
+        doc:name="JMS Config"
+        doc:id="33a67f4a-4c20-4f96-9fdf-342685d87492">
+
+        <jms:active-mq-connection/>
+
+    </jms:config>
+
+
+    
+
+    <http:request-config
+        name="HTTP_Request_configuration"
+        doc:name="HTTP Request configuration"
+        doc:id="cfe9b562-6840-4934-88e9-a5d04f25d8ef"
+        basePath="/api/stock">
+
+        <http:request-connection
+            host="localhost"
+            port="8084"/>
+
+    </http:request-config>
+
+
+   
+
+    <http:request-config
+        name="HTTP_Request_configuration1"
+        doc:name="Notification Service"
+        doc:id="72796503-f65b-4129-bafd-30298762fcff"
+        basePath="/api/notifications">
+
+        <http:request-connection
+            host="localhost"
+            port="3000"/>
+
+    </http:request-config>
+
+
+   
+    <flow
+        name="chainelogistiquefinaleFlow"
+        doc:id="45b9629e-1ad2-4691-ba61-9531a23b460e">
+
+       
+        <http:listener
+            doc:name="Listener"
+            doc:id="1f23c5ae-9dc9-45e0-a762-d8fba4aad974"
+            config-ref="HTTP_Listener_config"
+            path="/workflowEntrepot"/>
+
+
+       
+        <set-variable
+            value="#[payload]"
+            doc:name="Set Variable"
+            doc:id="5658b8f2-5d06-4f29-b163-c486a156d167"
+            variableName="entrepotPayload"/>
+
+
+       
+        <ee:transform
+            doc:name="Prepare getCommande"
+            doc:id="6064d3b1-9749-461d-8d1d-428b7f5ff54f">
+
+            <ee:message>
+
+                <ee:set-payload><![CDATA[
+%dw 2.0
+output application/xml
+ns ns0 http://service
+---
+{
+    ns0#getCommande: {
+        ns0#commandeId: vars.entrepotPayload.commandeId
+    }
+}
+                ]]></ee:set-payload>
+
+            </ee:message>
+
+        </ee:transform>
+
+
+       
+        <wsc:consume
+            operation="getCommande"
+            doc:name="Get Commande"
+            doc:id="6a5af47a-60d4-410c-a1ec-94b4b598f6c2"
+            config-ref="Web_Service_Consumer_Config"/>
+
+
+        
+        <ee:transform
+            doc:name="Read Commande Response"
+            doc:id="b89a88ec-17a8-4a51-a85a-92f09f93be2d">
+
+            <ee:message>
+
+                <ee:set-payload><![CDATA[
+%dw 2.0
+output application/xml
+ns ns0 http://service
+---
+payload.body
+                ]]></ee:set-payload>
+
+            </ee:message>
+
+        </ee:transform>
+
+
+       
+
+        <ee:transform
+            doc:name="Prepare Change Statut"
+            doc:id="da14ae9e-3f6b-4426-83a6-f99043c049d2">
+
+            <ee:message>
+
+                <ee:set-payload><![CDATA[
+%dw 2.0
+output application/xml
+ns ns0 http://service
+---
+{
+    ns0#changeStatut: {
+        ns0#commandeId: vars.entrepotPayload.commandeId,
+        ns0#nouvelEtat: vars.entrepotPayload.nouvelEtat
+    }
+}
+                ]]></ee:set-payload>
+
+            </ee:message>
+
+        </ee:transform>
+
+
+       
+        <wsc:consume
+            doc:name="Change Statut"
+            doc:id="b12f4c18-1d0d-4ee6-afe1-7185dddc1ec2"
+            config-ref="Web_Service_Consumer_Config1"
+            operation="changeStatut"/>
+
+
+       
+        <ee:transform
+            doc:name="Read Change Statut Response"
+            doc:id="efbdc642-23f0-4fc4-9ce3-fb010fe01e13">
+
+            <ee:message>
+
+                <ee:set-payload><![CDATA[
+%dw 2.0
+output application/json
+---
+payload.body
+                ]]></ee:set-payload>
+
+            </ee:message>
+
+        </ee:transform>
+
+
+       
+
+        <jms:publish
+            doc:name="Publish"
+            doc:id="9cfcba1b-64ba-4856-8be1-81e4b5af247c"
+            config-ref="JMS_Config"
+            destination="validationTopic"
+            destinationType="TOPIC">
+
+            <jms:message>
+
+                <jms:body><![CDATA[
+#[vars.entrepotPayload]
+                ]]></jms:body>
+
+            </jms:message>
+
+        </jms:publish>
+
+    </flow>
+
+
+   
+
+    <flow
+        name="chainelogistiquefinaleFlow1"
+        doc:id="52540f0e-3962-4211-a3c3-6b5a8319dce6">
+
+       
+        <jms:listener
+            doc:name="On New Message"
+            config-ref="JMS_Config"
+            destination="validationTopic"
+            numberOfConsumers="1">
+
+            <jms:consumer-type>
+                <jms:topic-consumer shared="true"/>
+            </jms:consumer-type>
+
+        </jms:listener>
+
+
+       
+        <choice doc:name="Vérifier le statut">
+
+           
+            <when expression="#[payload.nouvelEtat == 'VALIDEE']">
+
+                <http:request
+                    method="PUT"
+                    doc:name="Modifier Stock"
+                    config-ref="HTTP_Request_configuration"
+                    path="/{idProduit}/diminuer">
+
+                    <http:uri-params><![CDATA[#[{
+    idProduit: payload.produits
+}]]]></http:uri-params>
+
+                    <http:query-params><![CDATA[#[{
+    quantite: payload.quantite_commandee
+}]]]></http:query-params>
+
+                </http:request>
+
+            </when>
+
+
+            
+            <otherwise>
+
+                <logger
+                    level="INFO"
+                    message="Stock non diminué : commande #[payload.commandeId] non validée."/>
+
+            </otherwise>
+
+        </choice>
+
+    </flow>
+
+
+    
+
+    <flow
+        name="chainelogistiquefinaleFlow2"
+        doc:id="4b8ae08d-86bf-497c-ac7d-001c66f648c7">
+
+       
+        <jms:listener
+            doc:name="On New Message"
+            doc:id="f892e8b5-a4e3-417c-9772-4ffa2e632240"
+            config-ref="JMS_Config"
+            destination="validationTopic"
+            numberOfConsumers="1">
+
+            <jms:consumer-type>
+                <jms:topic-consumer shared="true"/>
+            </jms:consumer-type>
+
+        </jms:listener>
+
+
+       
+        <ee:transform
+            doc:name="Prepare Notification"
+            doc:id="10cddef1-262f-4867-a794-42bbca3e5441">
+
+            <ee:message>
+
+                <ee:set-payload><![CDATA[
+%dw 2.0
+output application/json
+---
+{
+    idCommande: payload.commandeId,
+    idFournisseur: payload.idFournisseur,
+    nouvelEtat: payload.nouvelEtat,
+    anomalie: payload.anomalie
+}
+                ]]></ee:set-payload>
+
+            </ee:message>
+
+        </ee:transform>
+
+
+      
+        <http:request
+            method="POST"
+            doc:name="Send Notification"
+            doc:id="1f224971-b350-4091-9c37-c786429e9a73"
+            config-ref="HTTP_Request_configuration1"
+            path="/">
+
+            <http:headers><![CDATA[#[{
+    "Content-Type": "application/json"
+}]]]></http:headers>
+
+        </http:request>
+
+    </flow>
+
+</mule>

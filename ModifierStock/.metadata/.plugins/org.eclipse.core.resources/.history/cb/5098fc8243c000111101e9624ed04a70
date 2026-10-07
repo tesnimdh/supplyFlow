@@ -1,0 +1,5 @@
+package com.entrepot.modifierstock.repository;
+
+public interface StockRepository {
+
+}

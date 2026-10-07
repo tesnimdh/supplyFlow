@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- Use this file to deploy some handlers/chains and services      --><!-- Two ways to do this:                                           --><!--   java org.apache.axis.client.AdminClient deploy.wsdd          --><!--      after the axis server is running                          --><!-- or                                                             --><!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   --><!--      from the same directory that the Axis engine runs         --><wsdd:deployment xmlns:wsdd="http://xml.apache.org/axis/wsdd/" xmlns:XMLSchema="http://www.w3.org/2001/XMLSchema" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java" xmlns:service="http://service">
+  <wsdd:service name="ChangeCommandeImpl" provider="java:RPC" use="literal" style="wrapped">
+    <wsdd:parameter name="wsdlTargetNamespace" value="http://service"/>
+    <wsdd:parameter name="wsdlServiceElement" value="ChangeCommandeImplService"/>
+    <wsdd:parameter name="schemaQualified" value="http://service"/>
+    <wsdd:parameter name="wsdlServicePort" value="ChangeCommandeImpl"/>
+    <wsdd:parameter name="className" value="service.ChangeCommandeImpl"/>
+    <wsdd:parameter name="wsdlPortType" value="ChangeCommandeImpl"/>
+    <wsdd:parameter name="typeMappingVersion" value="1.2"/>
+    <wsdd:parameter name="allowedMethods" value="changeStatut"/>
+    <wsdd:operation name="changeStatut" qname="service:changeStatut" returnQName="service:changeStatutReturn" returnType="XMLSchema:string" soapAction="">
+      <wsdd:parameter qname="service:idCommande" type="XMLSchema:string"/>
+      <wsdd:parameter qname="service:nouvelEtat" type="XMLSchema:string"/>
+    </wsdd:operation>
+  </wsdd:service>
+</wsdd:deployment>

@@ -1,0 +1,19 @@
+{
+  "commandeId": "CMD111",
+  "statut": "valide",
+  "idFournisseur": "FOR111",
+  "nomFournisseur": "for1",
+  "contactFournisseur": "for1@gmail.com",
+  "produits": [
+    {
+      "idProduit": 3,
+      "designationProduit": "Produit C",
+      "quantite": 30
+    },
+    {
+      "idProduit": 4,
+      "designationProduit": "Produit D",
+      "quantite": 20
+    }
+  ]
+}

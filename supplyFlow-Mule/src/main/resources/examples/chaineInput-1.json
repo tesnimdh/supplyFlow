@@ -1,0 +1,16 @@
+{
+  "commandeId": "CMD111",
+  "statut": "en_attente",
+  "idFournisseur": "FOR111",
+  "nomFournisseur": "for1",
+  "contactFournisseur": "tesnimdhouib03@gmail.com",
+  "nouvelEtat1": "livré",
+  "nouvelEtat2": "valide",
+  "produits": [
+    {
+      "idProduit": 3,
+      "designationProduit": "Produit C",
+      "quantiteProduit": 30
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://service" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://service" xmlns:intf="http://service" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4.1-SNAPSHOT
+Built on Nov 07, 2023 (07:57:58 UTC)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://service" xmlns="http://www.w3.org/2001/XMLSchema">
+   <element name="getCommande">
+    <complexType>
+     <sequence>
+      <element name="idCommande" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getCommandeResponse">
+    <complexType>
+     <sequence>
+      <element name="getCommandeReturn" type="impl:Commande"/>
+     </sequence>
+    </complexType>
+   </element>
+   <complexType name="Commande">
+    <sequence>
+     <element name="dateCommande" nillable="true" type="xsd:dateTime"/>
+     <element name="idCommande" nillable="true" type="xsd:string"/>
+     <element name="idFournisseur" nillable="true" type="xsd:string"/>
+     <element name="reference" nillable="true" type="xsd:string"/>
+     <element name="statut" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="getCommandeResponse">
+
+      <wsdl:part element="impl:getCommandeResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getCommandeRequest">
+
+      <wsdl:part element="impl:getCommande" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:portType name="IsExistImpl">
+
+      <wsdl:operation name="getCommande">
+
+         <wsdl:input message="impl:getCommandeRequest" name="getCommandeRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getCommandeResponse" name="getCommandeResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="IsExistImplSoapBinding" type="impl:IsExistImpl">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="getCommande">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getCommandeRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getCommandeResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="IsExistImplService">
+
+      <wsdl:port binding="impl:IsExistImplSoapBinding" name="IsExistImpl">
+
+         <wsdlsoap:address location="http://localhost:9091/ExistanceCommande/services/IsExistImpl"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>
